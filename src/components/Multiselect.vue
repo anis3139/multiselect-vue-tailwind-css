@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 const emit = defineEmits(["update:input"]);
 const props = defineProps({
   options: {
@@ -20,35 +20,39 @@ const props = defineProps({
   },
 });
 
-watch(props.modelValue, async (newVal, oldVal) => {
-  emit("update:input", newVal);
-});
-
 const optionObj = computed(() => {
   let result = props.options.map((option) => {
     let checked = props.modelValue.includes(option);
     return { value: option, checked: checked };
   });
-
   return result;
 });
+
+const form = reactive({
+  selectedData: props.modelValue,
+  optionObjArr: optionObj,
+});
+
+watch(form.optionObjArr, async (newVal, oldVal) => {
+  emit("update:input", newVal);
+});
+
 const toggle = ref(false);
 
 const toggler = () => {
   toggle.value = !toggle.value;
 };
 
-const removeHandaler = (item: string) => {
-  props.modelValue.splice(props.modelValue.indexOf(item), 1);
-};
-
-const itemHandeler = (option: { value: string; checked: boolean }) => {
-  var index = props.modelValue.indexOf(option.value);
-
-  if (index === -1) {
-    props.modelValue.push(option.value);
+const itemHandeler = (option: { value: string; checked: boolean } | string) => {
+  if (typeof option == "string") {
+    form.selectedData.splice(form.selectedData.indexOf(option), 1);
   } else {
-    props.modelValue.splice(index, 1);
+    var index = form.selectedData.indexOf(option.value);
+    if (index === -1) {
+      form.selectedData.push(option.value);
+    } else {
+      form.selectedData.splice(index, 1);
+    }
   }
 };
 </script>
@@ -63,12 +67,12 @@ const itemHandeler = (option: { value: string; checked: boolean }) => {
     >
       <div
         aria-level="input_box"
-        class="p-1 form-controll outline outline-gray-200 dark:outline-gray-600"
+        class="p-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm outline outline-gray-200 dark:outline-gray-600"
         @click="toggler"
       >
-        <div v-if="modelValue.length > 0">
+        <div v-if="form.selectedData.length > 0">
           <div
-            v-for="sd in modelValue"
+            v-for="sd in form.selectedData"
             :key="sd"
             class="inline-flex flex-wrap items-center"
           >
@@ -78,7 +82,7 @@ const itemHandeler = (option: { value: string; checked: boolean }) => {
               <span class="mr-2 text-md">{{ sd }}</span>
               <span
                 class="text-sm mt-0.5 inline-block cursor-pointer hover:font-bold text-red-800 hover:text-red-700 hover:scale-105"
-                @click.prevent.stop="removeHandaler(sd)"
+                @click.prevent.stop="itemHandeler(sd)"
                 >&#x2717;</span
               >
             </div>
@@ -102,7 +106,7 @@ const itemHandeler = (option: { value: string; checked: boolean }) => {
           v-show="toggle"
         >
           <div
-            v-for="option in optionObj"
+            v-for="option in form.optionObjArr"
             :key="option"
             @click="itemHandeler(option)"
           >
@@ -111,11 +115,14 @@ const itemHandeler = (option: { value: string; checked: boolean }) => {
             >
               <div class="grid place-item-center">
                 <span
-                  class="checked grid place-content-center text-sm"
+                  class="bg-blue-600 text-white w-4 h-4 p-2 grid place-content-center text-sm"
                   v-if="option.checked"
                   >&#x2713;</span
                 >
-                <span v-else class="unChecked"></span>
+                <span
+                  v-else
+                  class="bg-white text-black dark:text-gray-50 w-4 h-4 inline-block p-2"
+                ></span>
               </div>
               <div class="break-all">
                 {{ option.value }}
