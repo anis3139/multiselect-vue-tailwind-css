@@ -22,7 +22,7 @@ const props = defineProps({
 
 const optionObj = computed(() => {
   let result = props.options.map((option) => {
-    let checked = props.modelValue.includes(option);
+    let checked: boolean = props.modelValue.includes(option);
     return { value: option, checked: checked };
   });
   return result;
@@ -43,7 +43,7 @@ const toggler = () => {
   toggle.value = !toggle.value;
 };
 
-const itemHandeler = (option: { value: string; checked: boolean } | string) => {
+const itemHandeler = (option: { value: string; checked: boolean } | any) => {
   if (typeof option == "string") {
     form.selectedData.splice(form.selectedData.indexOf(option), 1);
   } else {
@@ -72,8 +72,8 @@ const itemHandeler = (option: { value: string; checked: boolean } | string) => {
       >
         <div v-if="form.selectedData.length > 0">
           <div
-            v-for="sd in form.selectedData"
-            :key="sd"
+            v-for="(sd, index) in form.selectedData"
+            :key="index"
             class="inline-flex flex-wrap items-center"
           >
             <div
@@ -106,8 +106,8 @@ const itemHandeler = (option: { value: string; checked: boolean } | string) => {
           v-show="toggle"
         >
           <div
-            v-for="option in form.optionObjArr"
-            :key="option"
+            v-for="(option, index) in form.optionObjArr"
+            :key="index"
             @click="itemHandeler(option)"
           >
             <div
