@@ -178,6 +178,11 @@
   resolved "https://registry.npmjs.org/@vue/shared/-/shared-3.2.38.tgz"
   integrity sha512-dTyhTIRmGXBjxJE+skC8tTWCGLCVc4wQgRRLt8+O9p5ewBAjoBwtCAkLPrtToSr1xltoe3st21Pv953aOZ7alg==
 
+"@vueform/multiselect@^2.5.8":
+  version "2.5.8"
+  resolved "https://registry.npmjs.org/@vueform/multiselect/-/multiselect-2.5.8.tgz"
+  integrity sha512-etUJCCDlo3LDsbDLoJdDHFpvgHyl2rzcOG9VQvLJ3caNIHDYm0g+HMIbAydswWr1iWKstqRi9YkkBR75gQ9TBw==
+
 acorn-node@^1.8.2:
   version "1.8.2"
   resolved "https://registry.npmjs.org/acorn-node/-/acorn-node-1.8.2.tgz"

@@ -1,15 +1,30 @@
-<script setup lang="ts">
-import Multiselect from "@/components/Multiselect.vue";
-import { ref } from "vue";
-const options = ref(["admin", "editor", "author", "user"]);
-const selected = ref(['admin']);
+<template>
+  <div class="text-light">
+    {{options}}
+    <Multiselect
+      v-model="value"
+      mode="tags"
+      placeholder="Select your characters"
+      :options="options"
+      :searchable="true"
+      :createTag="true"
+      style="min-width: 300px"
+    />
+  </div>
+</template>
+
+<script>
+import Multiselect from "@vueform/multiselect";
+
+export default {
+  components: { Multiselect },
+  data() {
+    return {
+      value: ["Batman"],
+      options: ["Batman", "Robin", "Joker"],
+    };
+  },
+};
 </script>
 
-<template>
-  <Multiselect
-    :options="options"
-    v-model="selected"
-    placeholder="Pick some..."
-    class="block w-full"
-  ></Multiselect>
-</template>
+<style src="@vueform/multiselect/themes/default.css"></style>

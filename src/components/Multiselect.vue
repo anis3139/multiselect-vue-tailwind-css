@@ -55,20 +55,6 @@ const itemHandeler = (option: any) => {
     form.selectedData.splice(index, 1);
   }
 };
-
-let searchHandaler = (event: any) => {
-  let key = event.target.value;
-  let result = form.optionObjArr.filter((obj) => {
-    if (obj.checked !== true) {
-      return obj.value.indexOf(key) !== -1;
-    }
-    return false;
-  });
-
-  if (typeof result == "object") {
-    form.optionObjArr = result;
-  }
-};
 </script>
 
 <template>
@@ -84,7 +70,7 @@ let searchHandaler = (event: any) => {
         class="p-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm outline outline-gray-200 dark:outline-gray-600"
         @click="toggler"
       >
-        <div>
+        <div v-if="modelValue.length > 0">
           <div
             v-for="(sd, index) in form.selectedData"
             :key="index"
@@ -101,12 +87,9 @@ let searchHandaler = (event: any) => {
               >
             </div>
           </div>
-          <input
-            type="text"
-            @keyup="searchHandaler($event)"
-            class="w-full min-h-8 mt-2 flex gap-2 items-center p-2 rounded-md ring-1 ring-black ring-opacity-5 text-black bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-white cursor-pointer"
-            :placeholder="placeholder"
-          />
+        </div>
+        <div v-else class="text-gray-700 shadow-sm h-7">
+          {{ placeholder }}
         </div>
       </div>
       <transition
