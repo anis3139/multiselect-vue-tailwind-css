@@ -4,7 +4,7 @@ const emit = defineEmits(["update:input"]);
 const props = defineProps({
   options: {
     type: Array,
-    default: [],
+    default: [""],
     require: false,
   },
   modelValue: {
@@ -12,7 +12,6 @@ const props = defineProps({
     default: [],
     require: false,
   },
-
   placeholder: {
     type: String,
     default: "Select one",
@@ -20,12 +19,19 @@ const props = defineProps({
   },
 });
 
+const toggle = ref(false);
+
+interface MyObjLayout {
+  value: any;
+  checked: Boolean;
+}
+
 const optionObj = computed(() => {
-  let result = props.options.map((option) => {
+  return [...props.options].map((option: any) => {
     let checked: boolean = props.modelValue.includes(option);
-    return { value: option, checked: checked };
+    let obj: MyObjLayout = { value: option, checked: checked };
+    return obj;
   });
-  return result;
 });
 
 const form = reactive({
@@ -37,22 +43,30 @@ watch(form.optionObjArr, async (newVal, oldVal) => {
   emit("update:input", newVal);
 });
 
-const toggle = ref(false);
-
 const toggler = () => {
   toggle.value = !toggle.value;
 };
 
-const itemHandeler = (option: { value: string; checked: boolean } | any) => {
-  if (typeof option == "string") {
-    form.selectedData.splice(form.selectedData.indexOf(option), 1);
+const itemHandeler = (option: any) => {
+  var index = form.selectedData.indexOf(option);
+  if (index === -1) {
+    form.selectedData.push(option);
   } else {
-    var index = form.selectedData.indexOf(option.value);
-    if (index === -1) {
-      form.selectedData.push(option.value);
-    } else {
-      form.selectedData.splice(index, 1);
+    form.selectedData.splice(index, 1);
+  }
+};
+
+let searchHandaler = (event: any) => {
+  let key = event.target.value;
+  let result = form.optionObjArr.filter((obj) => {
+    if (obj.checked !== true) {
+      return obj.value.indexOf(key) !== -1;
     }
+    return false;
+  });
+
+  if (typeof result == "object") {
+    form.optionObjArr = result;
   }
 };
 </script>
@@ -70,7 +84,7 @@ const itemHandeler = (option: { value: string; checked: boolean } | any) => {
         class="p-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm outline outline-gray-200 dark:outline-gray-600"
         @click="toggler"
       >
-        <div v-if="form.selectedData.length > 0">
+        <div>
           <div
             v-for="(sd, index) in form.selectedData"
             :key="index"
@@ -87,9 +101,12 @@ const itemHandeler = (option: { value: string; checked: boolean } | any) => {
               >
             </div>
           </div>
-        </div>
-        <div v-else class="text-gray-700 shadow-sm h-7">
-          {{ placeholder }}
+          <input
+            type="text"
+            @keyup="searchHandaler($event)"
+            class="w-full min-h-8 mt-2 flex gap-2 items-center p-2 rounded-md ring-1 ring-black ring-opacity-5 text-black bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-white cursor-pointer"
+            :placeholder="placeholder"
+          />
         </div>
       </div>
       <transition
@@ -108,7 +125,7 @@ const itemHandeler = (option: { value: string; checked: boolean } | any) => {
           <div
             v-for="(option, index) in form.optionObjArr"
             :key="index"
-            @click="itemHandeler(option)"
+            @click="itemHandeler(option.value)"
           >
             <div
               class="w-full min-h-8 mt-2 flex gap-2 items-center p-2 rounded-md ring-1 ring-black ring-opacity-5 text-black bg-gray-400 hover:bg-gray-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-white cursor-pointer"

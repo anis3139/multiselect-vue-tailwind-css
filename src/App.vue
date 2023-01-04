@@ -2,7 +2,7 @@
 import Multiselect from "@/components/Multiselect.vue";
 import { ref } from "vue";
 const options = ref(["admin", "editor", "author", "user"]);
-const selected = ref(["admin", "editor"]);
+const selected = ref(['admin']);
 </script>
 
 <template>
